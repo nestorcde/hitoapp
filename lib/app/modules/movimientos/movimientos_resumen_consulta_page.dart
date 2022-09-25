@@ -136,10 +136,21 @@ class __FormState extends State<_Form> {
               
                 autenticando: widget.movimientosController.fchDesdeCtrl.value.text == "" 
                               || widget.movimientosController.fchHastaCtrl.value.text == "",
-                texto: 'Finalizar',
+                texto: 'Resumido',
                 funcion: () async {
                   FocusScope.of(context).unfocus();
                   widget.movimientosController.obtenerResumen();
+                }),
+                const SizedBox(height: 10,),
+              
+            BotonAzul(
+              
+                autenticando: widget.movimientosController.fchDesdeCtrl.value.text == "" 
+                              || widget.movimientosController.fchHastaCtrl.value.text == "",
+                texto: 'Detallado',
+                funcion: () async {
+                  FocusScope.of(context).unfocus();
+                  widget.movimientosController.obtenerDetalles();
                 })
           ],
         ),

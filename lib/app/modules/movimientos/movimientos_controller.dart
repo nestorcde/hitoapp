@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
+import 'package:hito_app/app/modules/movimientos/movimientos_detalle_request.dart';
 //import 'package:open_document/open_document.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -78,6 +79,7 @@ class MovimientosController extends GetxController {
   RxBool connected = false.obs;
   Rx<DateTime> selectedDate = DateTime.now().obs;
   
+  
 
   Resumen resumenDefault = Resumen(
       cantMovLocal: 0,
@@ -99,6 +101,9 @@ class MovimientosController extends GetxController {
           material.TextEditingController().obs,
       fchHastaCtrl = material.TextEditingController().obs,
       nombreUsuarioCtrl = material.TextEditingController().obs;
+  Detalle detalleDefault = Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '');
+  Rx<Detalle> detalle = Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '').obs;
+  RxList<Detalle> detalles = [Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '')].obs;
 
   paisOrigeOnChange(Paises pais) {
     if (pais == paisLocal.value) {
@@ -343,6 +348,27 @@ class MovimientosController extends GetxController {
     }
   }
 
+  void obtenerDetalles() async {
+    http.Response resp = await repository.obtenerMovimientosDet(
+        fchDesde.value, fchHasta.value, idUsuario.value);
+    if (resp.statusCode == 200) {
+      MovimientoDetalleResponse movDetalle =
+          movimientoDetalleResponseFromJson(resp.body);
+      if (movDetalle.ok) {
+        detalles.value = movDetalle.detalles;
+       Get.toNamed(Routes.MOVIMIENTOSDETAPAGE);
+      } else {
+        await mostrarAlerta(Get.context!, 'Sin movimiento',
+            'No se registra movimiento para la consulta');
+        Get.back();
+      }
+    } else {
+      await mostrarAlerta(Get.context!, 'Error',
+          'Error al obtener detalle - hable con el administrador');
+      Get.back();
+    }
+  }
+
   void chooseDate(void Function(DateTime text) fchOnChange, TipoFecha tipoFecha) async {
     DateTime? pickedDate = await material.showDatePicker(
         context: Get.context!,
@@ -421,6 +447,34 @@ class MovimientosController extends GetxController {
     );
     return pdf.save();
   }
+
+  // pw.Expanded itemColumn(List<Detalle> elements) {
+  //   return pw.Expanded(
+  //     child: pw.Column(
+  //       children: [
+  //         for (var element in elements)
+  //           pw.Row(
+  //             children: [
+  //               pw.Expanded(
+  //                   child: pw.Text(element.itemName,
+  //                       textAlign: pw.TextAlign.left)),
+  //               pw.Expanded(
+  //                   child: pw.Text(element.itemPrice,
+  //                       textAlign: pw.TextAlign.right)),
+  //               pw.Expanded(
+  //                   child:
+  //                       pw.Text(element.amount, textAlign: pw.TextAlign.right)),
+  //               pw.Expanded(
+  //                   child:
+  //                       pw.Text(element.total, textAlign: pw.TextAlign.right)),
+  //               pw.Expanded(
+  //                   child: pw.Text(element.vat, textAlign: pw.TextAlign.right)),
+  //             ],
+  //           )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Future<void> savePdfFile(String fileName, Uint8List byteList) async {
     final output = await getExternalStorageDirectory();

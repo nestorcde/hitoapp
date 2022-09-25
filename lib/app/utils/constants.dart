@@ -46,12 +46,12 @@ final horarios = ['08:00', '13:00', '15:00', '17:00', '19:00'];
 
 
 class Environment {
-  //  Uri apiUrl(String endpoint) =>    Uri(
-  //                         scheme: 'https',
-  //                         host: 'squid-app-v7yuj.ondigitalocean.app' ,
-  //                         path: '/api'+endpoint
-  //                       );
-  //  String stringUrl() =>  'https://squid-app-v7yuj.ondigitalocean.app';
+   Uri apiUrl(String endpoint) =>    Uri(
+                          scheme: 'https',
+                          host: 'squid-app-v7yuj.ondigitalocean.app' ,
+                          path: '/api'+endpoint
+                        );
+   String stringUrl() =>  'https://squid-app-v7yuj.ondigitalocean.app';
   //  Uri apiUrl(String endpoint) =>    Uri(
   //                         scheme: 'https',
   //                         host: 'chat-app-server-nestorcde.herokuapp.com' ,
@@ -65,11 +65,11 @@ class Environment {
   //                         path: '/api$endpoint'
   //                       );
   //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://localhost:3000${endpoint.trim()}' : 'http://localhost:3000${endpoint.trim()}';
-   Uri apiUrl(String endpoint) =>    Uri(
-                          scheme: 'http',
-                          host: Platform.isAndroid ? '192.168.100.214' : '192.168.100.214',
-                          port: 3000,
-                          path: '/api$endpoint'
-                        );
-   String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.214:3000${endpoint.trim()}' : 'http://192.168.100.214:3000${endpoint.trim()}';
+  //  Uri apiUrl(String endpoint) =>    Uri(
+  //                         scheme: 'http',
+  //                         host: Platform.isAndroid ? '192.168.100.214' : '192.168.100.214',
+  //                         port: 3000,
+  //                         path: '/api$endpoint'
+  //                       );
+  //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.214:3000${endpoint.trim()}' : 'http://192.168.100.214:3000${endpoint.trim()}';
 }

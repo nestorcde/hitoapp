@@ -11,4 +11,7 @@ class MovimientosRepository {
   Future<http.Response> obtenerMovimientos(
           String fchDesde, String fchHasta, String idUsuario) async =>
       await api.obtenerMovimientos(fchDesde,fchHasta,idUsuario);
+  Future<http.Response> obtenerMovimientosDet(
+          String fchDesde, String fchHasta, String idUsuario) async =>
+      await api.obtenerMovimientosDet(fchDesde,fchHasta,idUsuario);
 }

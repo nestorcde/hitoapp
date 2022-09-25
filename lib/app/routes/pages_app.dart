@@ -8,6 +8,7 @@ import 'package:hito_app/app/modules/login/change_password_page.dart';
 import 'package:hito_app/app/modules/login/login_binding.dart';
 import 'package:hito_app/app/modules/login/login_page.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_binding.dart';
+import 'package:hito_app/app/modules/movimientos/movimientos_detalles_page.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_page.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_resumen_detalles.dart';
 import 'package:hito_app/app/modules/paises/pais_new_page.dart';
@@ -108,6 +109,11 @@ abstract class AppPages {
     GetPage(
       name: Routes.MOVIMIENTOSDETA, 
       page:()=>  MovimientosResumenDetalle(), 
+      binding: MovimientosBinding()
+    ),
+    GetPage(
+      name: Routes.MOVIMIENTOSDETAPAGE, 
+      page:()=>  MovimientosDetallePage(), 
       binding: MovimientosBinding()
     ),
     

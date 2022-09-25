@@ -18,4 +18,5 @@ abstract class Routes{
   static const MOVIMIENTOS = '/movimientos';
   static const MOVIMIENTOSRESU = '/movimientosresu';
   static const MOVIMIENTOSDETA = '/movimientosdeta';
+  static const MOVIMIENTOSDETAPAGE = '/movimientosdetapage';
 }

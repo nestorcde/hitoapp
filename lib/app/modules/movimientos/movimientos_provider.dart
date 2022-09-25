@@ -44,4 +44,19 @@ class MovimientosProvider {
         });
   }
 
+  Future<http.Response> obtenerMovimientosDet(String fchDesde, String fchHasta, String idUsuario) async{
+      final token = await _storage.read(key: 'token');
+      final data = {
+            "fchDesde": fchDesde,
+            "fchHasta": fchHasta,
+            "idUsuario": idUsuario
+          };
+      return await http.post(Environment().apiUrl('/movimientos/det'),
+          body: jsonEncode(data),
+          headers: {
+          'Content-Type': 'application/json',
+          'x-token': token.toString()
+        });
+  }
+
 }

@@ -69,7 +69,7 @@ class __FormState extends State<_Form> {
     // final authService = Provider.of<AuthService>(context);
     // final socketService = Provider.of<SocketService>(context);
     _recLoged();
-    final estilo = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
+    final estilo = const TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
     return Container(
       //margin: EdgeInsets.only(top: 15),
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -78,57 +78,74 @@ class __FormState extends State<_Form> {
           //color: Colors.green,
          // height: Get.height*0.2,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40,),
-              Obx(() => Visibility(
-                    visible:
-                        widget.movimientosController.resumen.value.cantMovLocal >
-                            0,
-                    child: Obx(() => Text(
-                        "Mov. Local: ${widget.movimientosController.resumen.value.cantMovLocal} "+
-                        "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovLocal)}",
-                        style: estilo,)),
-                  )),
-              SizedBox(height: 20,),
-              Obx(() => Visibility(
-                    visible:
-                        widget.movimientosController.resumen.value.cantMovMerc >
-                            0,
-                    child: Obx(() => Text(
-                        "Mov. Mercosur: ${widget.movimientosController.resumen.value.cantMovMerc} "+
-                        "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovMerc)}",
-                        style: estilo,)),
-                  )),
-              SizedBox(height: 20,),
-              Obx(() => Visibility(
-                    visible:
-                        widget.movimientosController.resumen.value.cantMovNoMerc >
-                            0,
-                    child: Obx(() => Text(
-                        "Mov. No Mercosur: ${widget.movimientosController.resumen.value.cantMovNoMerc} "+
-                        "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovNoMerc)}",
-                        style: estilo,)),
-                  )),
-              SizedBox(height: 20,),
-              BotonAzul(
-                  autenticando: widget.movimientosController.autenticando
-                      .value, //authService.autenticando,
-                  texto: 'Generar PDF',
-                  funcion: () async {
-                    FocusScope.of(context).unfocus();
-                    final data = await widget.movimientosController.crearReporte(
-                                      widget.movimientosController.resumen.value,
-                                      widget.movimientosController.fchDesde.value,
-                                      widget.movimientosController.fchHasta.value,
-                                      widget.movimientosController.nombreUsuarioCtrl.value.text);
-                    final numale = Random(DateTime.now().microsecond).nextInt(1000);
+              const SizedBox(height: 20,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text('Fecha Desde: ${widget.movimientosController.fchDesde.value}', style: estilo,),
+                  Text('Fecha Hasta: ${widget.movimientosController.fchHasta.value}', style: estilo),
+                  Text('Usuario: ${widget.movimientosController.nombreUsuarioCtrl.value.text==""?
+                  "TODOS":widget.movimientosController.nombreUsuarioCtrl.value.text}', style: estilo),
 
-                    widget.movimientosController.savePdfFile("reporte_$numale", data);
-                    Get.offAllNamed(Routes.HOME);
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  const SizedBox(height: 40,),
+                  Obx(() => Visibility(
+                        visible:
+                            widget.movimientosController.resumen.value.cantMovLocal >
+                                0,
+                        child: Obx(() => Text(
+                            "Mov. Local: ${widget.movimientosController.resumen.value.cantMovLocal} "+
+                            "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovLocal)}",
+                            style: estilo,)),
+                      )),
+                  const SizedBox(height: 20,),
+                  Obx(() => Visibility(
+                        visible:
+                            widget.movimientosController.resumen.value.cantMovMerc >
+                                0,
+                        child: Obx(() => Text(
+                            "Mov. Mercosur: ${widget.movimientosController.resumen.value.cantMovMerc} "+
+                            "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovMerc)}",
+                            style: estilo,)),
+                      )),
+                  const SizedBox(height: 20,),
+                  Obx(() => Visibility(
+                        visible:
+                            widget.movimientosController.resumen.value.cantMovNoMerc >
+                                0,
+                        child: Obx(() => Text(
+                            "Mov. No Mercosur: ${widget.movimientosController.resumen.value.cantMovNoMerc} "+
+                            "- Importe: ${widget.movimientosController.f.format(widget.movimientosController.resumen.value.impMovNoMerc)}",
+                            style: estilo,)),
+                      )),
+                  const SizedBox(height: 20,),
+                  BotonAzul(
+                      autenticando: widget.movimientosController.autenticando
+                          .value, //authService.autenticando,
+                      texto: 'Generar PDF',
+                      funcion: () async {
+                        FocusScope.of(context).unfocus();
+                        final data = await widget.movimientosController.crearReporte(
+                                          widget.movimientosController.resumen.value,
+                                          widget.movimientosController.fchDesde.value,
+                                          widget.movimientosController.fchHasta.value,
+                                          widget.movimientosController.nombreUsuarioCtrl.value.text);
+                        final numale = Random(DateTime.now().microsecond).nextInt(1000);
 
-                  })
+                        widget.movimientosController.savePdfFile("reporte_$numale", data);
+                        Get.offAllNamed(Routes.HOME);
+
+                      })
+                ],
+              ),
             ],
           ),
         ),
