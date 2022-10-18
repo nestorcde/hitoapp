@@ -37,8 +37,8 @@ class SettingsPage extends GetView<SettingsController> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const CustomLogo(
-                                  imagePath: 'assets/tag-logo.png',
-                                  textLabel: 'Hito Tres Fronteras\nPARAGUAY',
+                                  imagePath: 'assets/tag-logo3.png',
+                                  textLabel: '',
                                 ),
                                 Form(controller: _),
                                 const SizedBox(
@@ -88,8 +88,9 @@ class _FormState extends State<Form> {
     recargarPaises();
   }
 
-  recargarPaises()async{
-    widget.controller.listPaises = await widget.controller.paisesCtrl.getAllPaises();
+  recargarPaises() async {
+    widget.controller.listPaises =
+        await widget.controller.paisesCtrl.getAllPaises();
   }
 
   @override
@@ -97,6 +98,8 @@ class _FormState extends State<Form> {
     // final authService = Provider.of<AuthService>(context);
     // final socketService = Provider.of<SocketService>(context);
     //_recLogged();
+    final ingSinImpCtrl = TextEditingController();
+    ingSinImpCtrl.text = "Ingreso sin Impresora";
     return Container(
       //margin: EdgeInsets.only(top: 20),
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -220,22 +223,50 @@ class _FormState extends State<Form> {
                           )),
                     ),
                     Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child:  IconButton(
-                              color: Colors.grey[600],
-                              iconSize: 40,
-                            icon: const Icon(Icons.search),
-                            onPressed: () {
-                              showSearch(
-                                  context: context,
-                                  delegate: CustomSearchDelegate(
-                                      settingsController: widget.controller,
-                                      paises: widget.controller.listPaises));
-                            },
-                          )),
+                        padding: const EdgeInsets.only(left: 10),
+                        child: IconButton(
+                          color: Colors.grey[600],
+                          iconSize: 40,
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            showSearch(
+                                context: context,
+                                delegate: CustomSearchDelegate(
+                                    settingsController: widget.controller,
+                                    paises: widget.controller.listPaises));
+                          },
+                        )),
                   ],
                 ),
               )),
+          Container(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: Get.width * 0.75,
+                  child: CustomInput(
+                    icon: Icons.monetization_on_outlined,
+                    placeholder: 'Ingreso sin Impresora',
+                    enabled: false,
+                    //onChanged: widget.controller.paisLocalOnChanged,
+                    textController: ingSinImpCtrl,
+                    //keyboardType: TextInputType.number,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Obx(() => Checkbox(
+                        value: widget.controller.ingSinImp.value,
+                        onChanged:!widget.controller.editIngSinImp.value? null: (value){
+                          widget.controller.ingSinImp.value = value!;
+                        },
+                      )),
+                ),
+              ],
+            ),
+          ),
           Obx(() => Visibility(
                 visible: widget.controller.editPaisLocal.value,
                 child: BotonAzulNav(

@@ -26,7 +26,7 @@ class MovimientosPage extends GetView<MovimientosController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
+                      imagePath: 'assets/tag-logo3.png',
                       textLabel: 'Registrar ingreso',
                     ),
                     SizedBox(height: 20,),
@@ -219,8 +219,11 @@ class __FormState extends State<_Form> {
               ],
             ),
             Obx(() => BotonAzul(
-                autenticando: !widget.movimientosController.connected.value,
-                texto: 'Finalizar',
+                autenticando: widget.movimientosController.connected.value?
+                                false:
+                                widget.movimientosController.settings.ingresoSinImpresora?
+                                  false:true,
+                texto: 'PAGAR',
                 funcion: () async {
                   FocusScope.of(context).unfocus();
                   widget.movimientosController.crearMovimiento();

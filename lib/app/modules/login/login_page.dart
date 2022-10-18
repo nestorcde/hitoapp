@@ -28,14 +28,15 @@ class LoginPage extends StatelessWidget {
                   color: Colors.transparent,
                   height: Get.size.height * 0.9,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomLogo(
-                        imagePath: 'assets/tag-logo.png',
-                        textLabel: 'Hito Tres Fronteras\nPARAGUAY',
+                        imagePath: 'assets/tag-logo3.png',
+                        textLabel: '',
                       ),
                       Form(loginCtrl: _/*, loadingCtrl: loadingCtrl*/),
-                      SizedBox(height: 30,)
+                      SizedBox(height: 20,)
                     ],
                   ),
                 ),

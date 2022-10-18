@@ -32,6 +32,7 @@ class MovimientoDetalleResponse {
 class Detalle {
     Detalle({
         required this.num,
+        required this.movNum,
         required this.fecha,
         required this.cantidad,
         required this.importe,
@@ -40,6 +41,7 @@ class Detalle {
     });
 
     int num;
+    int movNum;
     String fecha;
     int cantidad;
     int importe;
@@ -48,6 +50,7 @@ class Detalle {
 
     factory Detalle.fromJson(Map<String, dynamic> json) => Detalle(
         num: json["num"],
+        movNum: json["movNum"],
         fecha: json["fecha"],
         cantidad: json["cantidad"],
         importe: json["importe"],
@@ -57,6 +60,7 @@ class Detalle {
 
     Map<String, dynamic> toJson() => {
         "num": num,
+        "movNum": movNum,
         "fecha": fecha,
         "cantidad": cantidad,
         "importe": importe,

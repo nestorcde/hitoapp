@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
-MovimientoResponse movimientoResponseFromJson(String str) => MovimientoResponse.fromJson(json.decode(str));
+MovimientoRequest movimientoResponseFromJson(String str) => MovimientoRequest.fromJson(json.decode(str));
 
-String movimientoResponseToJson(MovimientoResponse data) => json.encode(data.toJson());
+String movimientoResponseToJson(MovimientoRequest data) => json.encode(data.toJson());
 
-class MovimientoResponse {
-    MovimientoResponse({
+class MovimientoRequest {
+    MovimientoRequest({
         required this.ok,
         required this.msg,
         required this.fecha,
@@ -16,7 +16,7 @@ class MovimientoResponse {
     String msg;
     DateTime fecha;
 
-    factory MovimientoResponse.fromJson(Map<String, dynamic> json) => MovimientoResponse(
+    factory MovimientoRequest.fromJson(Map<String, dynamic> json) => MovimientoRequest(
         ok: json["ok"],
         msg: json["msg"],
         fecha: DateTime.parse(json["fecha"]),

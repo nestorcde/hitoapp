@@ -4,6 +4,7 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_detalle_request.dart';
+import 'package:hito_app/app/modules/movimientos/movimientos_response.dart';
 //import 'package:open_document/open_document.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +44,7 @@ class MovimientosController extends GetxController {
   late PaisesController _paisCtrl;
   late SettingsController _settingsCtrl;
   late SettingsResponse _settingsResponse;
-  late UsuarioController _usuarioController;
+  late UsuarioController usuarioController;
 
   late Settings settings;
   late List<Paises> listaPaises;
@@ -101,9 +102,9 @@ class MovimientosController extends GetxController {
           material.TextEditingController().obs,
       fchHastaCtrl = material.TextEditingController().obs,
       nombreUsuarioCtrl = material.TextEditingController().obs;
-  Detalle detalleDefault = Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '');
-  Rx<Detalle> detalle = Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '').obs;
-  RxList<Detalle> detalles = [Detalle(num: 0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '')].obs;
+  Detalle detalleDefault = Detalle(num: 0, movNum:0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '');
+  Rx<Detalle> detalle = Detalle(num: 0, movNum:0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '').obs;
+  RxList<Detalle> detalles = [Detalle(num: 0, movNum:0, fecha: '', cantidad: 0, importe: 0, pais: '', usuario: '')].obs;
 
   paisOrigeOnChange(Paises pais) {
     if (pais == paisLocal.value) {
@@ -150,7 +151,7 @@ class MovimientosController extends GetxController {
     _paisCtrl = Get.find<PaisesController>();
     _settingsCtrl = Get.find<SettingsController>();
     _authRepository = Get.find<AuthRepository>();
-    _usuarioController = Get.find<UsuarioController>();
+    usuarioController = Get.find<UsuarioController>();
     bluetooth = BlueThermalPrinter.instance;
     initPlatformState();
   }
@@ -165,7 +166,7 @@ class MovimientosController extends GetxController {
     for (var element in listaPaises) {
       if (element.uid != paisLocal.value.uid) listaPaisesEx.add(element);
     }
-    listaUsuarios = await _usuarioController.getAllUsuarios();
+    listaUsuarios = await usuarioController.getAllUsuarios();
   }
 
   // @override
@@ -255,7 +256,8 @@ class MovimientosController extends GetxController {
       movimiento.value.cantidad = cantidad.value;
       http.Response resp = await repository.crearMovimiento(movimiento.value);
       if (resp.statusCode == 200) {
-        await sample();
+        MovimientoResponse movResponse = movimientoResponseFromJson(resp.body);
+        await sample(movResponse);
         // paisOrigen.value = paisDefault;
         // paisOrigenCtrl.value.text = '';
         // tipoMovimiento.value = 0;
@@ -279,7 +281,7 @@ class MovimientosController extends GetxController {
     return imageBytes;
   }
 
-  sample() async {
+  sample(MovimientoResponse movResponse) async {
     final imageBytes = await imagePathToUint8List('assets/icono.png');
     final dateTime = DateTime.now();
     final fechaHora =
@@ -290,6 +292,8 @@ class MovimientosController extends GetxController {
         bluetooth.printImageBytes(imageBytes); //image from Asset
         bluetooth.printNewLine();
         bluetooth.printCustom(
+            "COMPROBANTE Nº: ${movResponse.movimiento.idMovimiento}", Size.bold.val, Align.left.val);
+        bluetooth.printCustom(
             "FECHA: $fechaHora", Size.bold.val, Align.left.val);
         bluetooth.printCustom("PAIS: ${paisOrigen.value.nombre.toUpperCase()}",
             Size.bold.val, Align.left.val);
@@ -298,6 +302,8 @@ class MovimientosController extends GetxController {
             "Importe abonado", Size.bold.val, Align.center.val);
         bluetooth.printCustom(
             f.format(importe.value), Size.extraLarge.val, Align.center.val);
+        bluetooth.printCustom(
+            '${movResponse.movimiento.cantidad} ${movResponse.movimiento.cantidad>1?"PERSONAS":"PERSONA"}', Size.bold.val, Align.center.val);
         bluetooth.printNewLine();
         bluetooth.printCustom(
             "Gracias por visitarnos", Size.medium.val, Align.center.val);
@@ -396,7 +402,7 @@ class MovimientosController extends GetxController {
       String fchHasta, String nombreUsuario) async {
     final pdf = pw.Document();
     final image =
-        (await rootBundle.load("assets/icono2.png")).buffer.asUint8List();
+        (await rootBundle.load("assets/icono3.png")).buffer.asUint8List();
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -404,6 +410,7 @@ class MovimientosController extends GetxController {
           return pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+              pw.SizedBox(height: 10),
               pw.Image(pw.MemoryImage(image),
                   width: 500, height: 150, fit: pw.BoxFit.cover),
               pw.SizedBox(height: 30),
@@ -448,33 +455,98 @@ class MovimientosController extends GetxController {
     return pdf.save();
   }
 
-  // pw.Expanded itemColumn(List<Detalle> elements) {
-  //   return pw.Expanded(
-  //     child: pw.Column(
-  //       children: [
-  //         for (var element in elements)
-  //           pw.Row(
-  //             children: [
-  //               pw.Expanded(
-  //                   child: pw.Text(element.itemName,
-  //                       textAlign: pw.TextAlign.left)),
-  //               pw.Expanded(
-  //                   child: pw.Text(element.itemPrice,
-  //                       textAlign: pw.TextAlign.right)),
-  //               pw.Expanded(
-  //                   child:
-  //                       pw.Text(element.amount, textAlign: pw.TextAlign.right)),
-  //               pw.Expanded(
-  //                   child:
-  //                       pw.Text(element.total, textAlign: pw.TextAlign.right)),
-  //               pw.Expanded(
-  //                   child: pw.Text(element.vat, textAlign: pw.TextAlign.right)),
-  //             ],
-  //           )
-  //       ],
-  //     ),
-  //   );
-  // }
+  Future<Uint8List> crearReporteDet(List<Detalle> detalles, String fchDesde,
+      String fchHasta, String nombreUsuario) async {
+    final pdf = pw.Document();
+    final image =
+        (await rootBundle.load("assets/icono3.png")).buffer.asUint8List();
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.SizedBox(height: 10),
+              pw.Image(pw.MemoryImage(image),
+                  width: 500, height: 150, fit: pw.BoxFit.cover),
+              pw.SizedBox(height: 30),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [ pw.Text("DETALLE DE MOVIMIENTOS", style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 30)),]),
+              pw.SizedBox(height: 20),
+              pw.Text("Fecha Desde: $fchDesde"),
+              pw.SizedBox(height: 10),
+              pw.Text("Fecha Hasta: $fchHasta"),
+              pw.SizedBox(height: 10),
+              pw.Text(
+                  "Usuario: ${nombreUsuario == "" ? "TODOS" : nombreUsuario}"),
+              pw.SizedBox(height: 30),
+              itemColumn(detalles)
+            ],
+          );
+        },
+      ),
+    );
+    return pdf.save();
+  }
+
+  pw.Expanded itemColumn(List<Detalle> elements) {
+    return pw.Expanded(
+      child: pw.Column(
+        children: [
+          pw.Row(
+              children: [
+                pw.Expanded(
+                    child: pw.Text('Num',
+                        textAlign: pw.TextAlign.left)),
+                pw.Expanded(
+                    child: pw.Text('MovNum',
+                        textAlign: pw.TextAlign.left)),
+                pw.Expanded(
+                    child: pw.Text('Fecha',
+                        textAlign: pw.TextAlign.left)),
+                pw.Expanded(
+                    child:
+                        pw.Text('Cant', textAlign: pw.TextAlign.right)),
+                pw.Expanded(
+                    child:
+                        pw.Text('Importe', textAlign: pw.TextAlign.right)),
+                pw.Expanded(
+                    child: pw.Text('Pais', textAlign: pw.TextAlign.center)),
+                pw.Expanded(
+                    child: pw.Text('Usuario', textAlign: pw.TextAlign.left)),
+              ],
+            ),
+          for (var element in elements)
+            
+            pw.Row(
+              children: [
+                pw.Expanded(
+                    child: pw.Text(element.num.toString(),
+                        textAlign: pw.TextAlign.left)),
+                pw.Expanded(
+                    child: pw.Text(element.movNum.toString(),
+                        textAlign: pw.TextAlign.center)),
+                pw.Expanded(
+                    child: pw.Text(element.fecha,
+                        textAlign: pw.TextAlign.left)),
+                pw.Expanded(
+                    child:
+                        pw.Text(element.cantidad.toString(), textAlign: pw.TextAlign.right)),
+                pw.Expanded(
+                    child:
+                        pw.Text(f.format(element.importe), textAlign: pw.TextAlign.right)),
+                pw.Expanded(
+                    child: pw.Text(element.pais, textAlign: pw.TextAlign.center)),
+                pw.Expanded(
+                    child: pw.Text(element.usuario, textAlign: pw.TextAlign.left)),
+              ],
+            )
+        ],
+      ),
+    );
+  }
 
   Future<void> savePdfFile(String fileName, Uint8List byteList) async {
     final output = await getExternalStorageDirectory();

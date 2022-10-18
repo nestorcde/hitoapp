@@ -23,7 +23,8 @@ class SettingsProvider {
             "plusFinde": settings.plusFinde,
             "descMenores": settings.descMenores,
             "descMayores": settings.descMayores,
-            "paises": settings.paises.uid
+            "paises": settings.paises.uid,
+            "ingresoSinImpresora": settings.ingresoSinImpresora
           };
           
       return await http.post(Environment().apiUrl('/parametros/new'),
@@ -40,7 +41,8 @@ class SettingsProvider {
             "plusFinde": settings.plusFinde,
             "descMenores": settings.descMenores,
             "descMayores": settings.descMayores,
-            "paises": settings.paises.uid
+            "paises": settings.paises.uid,
+            "ingresoSinImpresora": settings.ingresoSinImpresora
           };
       return await http.post(Environment().apiUrl('/parametros'),
           body: jsonEncode(data),

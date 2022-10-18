@@ -32,7 +32,7 @@ class _PaisNewPageState extends State<PaisNewPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
+                      imagePath: 'assets/tag-logo3.png',
                       textLabel: 'Registro de Pais',
                     ),
                     _Form(paisCtrl: _),

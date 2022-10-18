@@ -28,7 +28,7 @@ class MovimientosResumenDetalle extends GetView<MovimientosController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
+                      imagePath: 'assets/tag-logo3.png',
                       textLabel: 'Movimientos',
                     ),
                     _Form(movimientosController: controller),

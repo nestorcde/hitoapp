@@ -33,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
+                      imagePath: 'assets/tag-logo3.png',
                       textLabel: 'Registro de Usuario',
                     ),
                     _Form(registerCtrl: _, loadingCtrl: controller),

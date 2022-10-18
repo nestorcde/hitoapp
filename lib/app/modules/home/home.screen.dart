@@ -47,8 +47,8 @@ class HomeScreen extends GetView<HomeController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CustomLogo(
-                        imagePath: 'assets/tag-logo.png',
-                        textLabel: 'Hito Tres Fronteras\nPARAGUAY',
+                        imagePath: 'assets/tag-logo3.png',
+                        textLabel: '',
                       ),
                       Form(controller: controller/*, loadingCtrl: loadingCtrl*/),
                       SizedBox(height: 30,)

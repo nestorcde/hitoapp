@@ -24,8 +24,8 @@ class MovimientosResumenConsultaPage extends GetView<MovimientosController> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
+                      CustomLogo(
+                        imagePath: 'assets/tag-logo3.png',
                       textLabel: 'Consultar Resumen de Movimiento',
                     ),
                     _Form(movimientosController: controller),
@@ -65,6 +65,12 @@ class __FormState extends State<_Form> {
     // TODO: implement initState
     super.initState();
     widget.movimientosController.limpiarCamposConsulta();
+    recargarUsuarios();
+  }
+
+  recargarUsuarios() async {
+    widget.movimientosController.listaUsuarios =
+        await widget.movimientosController.usuarioController.getAllUsuarios();
   }
 
 

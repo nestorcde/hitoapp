@@ -11,6 +11,7 @@ class Settings {
         required this.descMayores,
         required this.paises,
         required this.uid,
+        required this.ingresoSinImpresora,
     });
 
     int precioLocal;
@@ -21,6 +22,7 @@ class Settings {
     int descMayores;
     Paises paises;
     String uid;
+    bool ingresoSinImpresora;
 
     factory Settings.fromJson(Map<String, dynamic> json) => Settings(
         precioLocal: json["precioLocal"],
@@ -31,6 +33,7 @@ class Settings {
         descMayores: json["descMayores"],
         paises: Paises.fromJson(json["paises"]),
         uid: json["uid"],
+        ingresoSinImpresora: json["ingresoSinImpresora"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -42,5 +45,6 @@ class Settings {
         "descMayores": descMayores,
         "paises": paises.toJson(),
         "uid": uid,
+        "ingresoSinImpresora": ingresoSinImpresora,
     };
 }

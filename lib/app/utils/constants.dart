@@ -67,9 +67,9 @@ class Environment {
   //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://localhost:3000${endpoint.trim()}' : 'http://localhost:3000${endpoint.trim()}';
   //  Uri apiUrl(String endpoint) =>    Uri(
   //                         scheme: 'http',
-  //                         host: Platform.isAndroid ? '192.168.100.214' : '192.168.100.214',
+  //                         host: Platform.isAndroid ? '192.168.100.215' : '192.168.100.215',
   //                         port: 3000,
   //                         path: '/api$endpoint'
   //                       );
-  //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.214:3000${endpoint.trim()}' : 'http://192.168.100.214:3000${endpoint.trim()}';
+  //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.215:3000${endpoint.trim()}' : 'http://192.168.100.215:3000${endpoint.trim()}';
 }

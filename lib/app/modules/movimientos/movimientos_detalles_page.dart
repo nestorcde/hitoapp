@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_controller.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_detalle_request.dart';
 import 'package:hito_app/app/routes/routes_app.dart';
@@ -28,9 +29,9 @@ class MovimientosDetallePage extends GetView<MovimientosController> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const CustomLogo(
-                      imagePath: 'assets/tag-logo.png',
-                      textLabel: 'Movimientos',
+                      CustomLogo(
+                        imagePath: 'assets/tag-logo3.png',
+                      textLabel: 'Movimientos Detallados',
                     ),
                     _Form(movimientosController: controller),
                     const SizedBox(
@@ -71,52 +72,65 @@ class __FormState extends State<_Form> {
     // final socketService = Provider.of<SocketService>(context);
     _recLoged();
     final estilo = const TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
+    final DataTableSource _data = MyData(widget.movimientosController.detalles.value);
     return Container(
       //margin: EdgeInsets.only(top: 15),
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: SingleChildScrollView(
         child: Container(
           //color: Colors.green,
-         // height: Get.height*0.2,
+          // height: Get.height*0.2,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 20,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text('Fecha Desde: ${widget.movimientosController.fchDesde.value}'),
-                  Text('Fecha Hasta: ${widget.movimientosController.fchHasta.value}'),
-                  Text('Usuario: ${widget.movimientosController.nombreUsuarioCtrl.value.text}'),
-
+                  Text('Fecha Desde: ${widget.movimientosController.fchDesde.value}', style: estilo,),
+                  Text('Fecha Hasta: ${widget.movimientosController.fchHasta.value}', style: estilo),
+                  Text('Usuario: ${widget.movimientosController.nombreUsuarioCtrl.value.text==""?
+                  "TODOS":widget.movimientosController.nombreUsuarioCtrl.value.text}', style: estilo),
                 ],
               ),
-              Container(
-                height: Get.height * 0.4,
-                child: ListView.builder(
-                  itemCount: widget.movimientosController.detalles.value.length,
-                  itemBuilder: (_, index){
-                    Detalle detalle = widget.movimientosController.detalles.value[index];
-                    return Text('${detalle.num}   ${detalle.fecha}    ${detalle.cantidad}   ${detalle.importe}    ${detalle.pais}   ${detalle.usuario}');
-                  }
-                ),
+              SizedBox(height: 20,),
+              PaginatedDataTable(
+                source: _data,
+                columns: const [
+                  DataColumn(label: Text('Num')),
+                  DataColumn(label: Text('MovNum')),
+                  DataColumn(label: Text('Fecha')),
+                  DataColumn(label: Text('Cant')),
+                  DataColumn(label: Text('Importe')),
+                  DataColumn(label: Text('Pais')),
+                  DataColumn(label: Text('Usuario')),
+                ],
+                //header: const Center(child: Text('My Products')),
+                columnSpacing: 50,
+                horizontalMargin: 60,
+                rowsPerPage: 8,
               ),
               BotonAzul(
-                  autenticando: true,//widget.movimientosController.autenticando.value, //authService.autenticando,
+                  autenticando:
+                      false, //widget.movimientosController.autenticando.value, //authService.autenticando,
                   texto: 'Generar PDF',
-                  funcion: 
-                  () async {
+                  funcion: () async {
                     FocusScope.of(context).unfocus();
-                    final data = await widget.movimientosController.crearReporte(
-                                      widget.movimientosController.resumen.value,
-                                      widget.movimientosController.fchDesde.value,
-                                      widget.movimientosController.fchHasta.value,
-                                      widget.movimientosController.nombreUsuarioCtrl.value.text);
-                    final numale = Random(DateTime.now().microsecond).nextInt(1000);
+                    final data = await widget.movimientosController
+                        .crearReporteDet(
+                            widget.movimientosController.detalles,
+                            widget.movimientosController.fchDesde.value,
+                            widget.movimientosController.fchHasta.value,
+                            widget.movimientosController.nombreUsuarioCtrl.value
+                                .text);
+                    final numale =
+                        Random(DateTime.now().microsecond).nextInt(1000);
 
-                    widget.movimientosController.savePdfFile("reporte_$numale", data);
+                    widget.movimientosController
+                        .savePdfFile("reporte_$numale", data);
                     Get.offAllNamed(Routes.HOME);
-                  }
-                  ),
+                  }),
             ],
           ),
         ),
@@ -127,4 +141,43 @@ class __FormState extends State<_Form> {
   Future<void> _recLoged() async {
     //widget.autenticado = widget.movimientosController.isLoggedIn();
   }
+}
+class MyData extends  DataTableSource{
+  final List<Detalle> detalles;
+  MyData(this.detalles);
+
+
+  // final List<Map<String, dynamic>> _data = List.generate(
+  //     200,
+  //         (index) => {
+  //       "id": index,
+  //       "title": "Item $index",
+  //       "price": Random().nextInt(10000)
+  //     });
+
+  @override
+  DataRow? getRow(int index) {
+    return DataRow(cells: [
+      DataCell(Text(detalles[index].num.toString())),
+      DataCell(Text(detalles[index].movNum.toString())),
+      DataCell(Text(detalles[index].fecha)),
+      DataCell(Text(detalles[index].cantidad.toString())),
+      DataCell(Text(detalles[index].importe.toString())),
+      DataCell(Text(detalles[index].pais)),
+      DataCell(Text(detalles[index].usuario)),
+    ]);
+  }
+
+  @override
+  // TODO: implement isRowCountApproximate
+  bool get isRowCountApproximate => false;
+
+  @override
+  // TODO: implement rowCount
+  int get rowCount => detalles.length;
+
+  @override
+  // TODO: implement selectedRowCount
+  int get selectedRowCount => 0;
+
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hito_app/app/data/models/paises_model.dart';
 import 'package:hito_app/app/modules/paises/paises_controller.dart';
 import 'package:hito_app/app/modules/settings/settings_model.dart';
@@ -27,10 +28,20 @@ late PaisesController paisesCtrl;
     // TODO: implement onReady
     super.onReady();
   }
-  Settings settingsDefault = Settings( uid: '', precioLocal: 0, descMayores: 0, descMenores: 0, plusMercosur: 0, plusNoMercosur: 0, plusFinde: 0, paises: Paises(uid: "", idPais: 0, nombre: "",mercosur: false));
-  Rx<Settings> settings = Settings(uid: '', precioLocal: 0, descMayores: 0, descMenores: 0, plusMercosur: 0, plusNoMercosur: 0, plusFinde: 0, paises: Paises(uid: "", idPais: 0, nombre: "",mercosur: false)).obs;
+  Settings settingsDefault = Settings( uid: '', precioLocal: 0, descMayores: 0, descMenores: 0, 
+                                        plusMercosur: 0, plusNoMercosur: 0, plusFinde: 0, 
+                                        paises: Paises(uid: "", idPais: 0, nombre: "",mercosur: false), 
+                                        ingresoSinImpresora: false);
 
-  RxBool editPrecioLocal = false.obs, editPlusMerc = false.obs, editPlusNoMerc = false.obs, editPlusFinde = false.obs, editDescMen = false.obs, editDescMay = false.obs, editPaisLocal = false.obs, responseOk = false.obs, verBtnGuardar = false.obs;
+  Rx<Settings> settings = Settings(uid: '', precioLocal: 0, descMayores: 0, descMenores: 0, 
+                                    plusMercosur: 0, plusNoMercosur: 0, plusFinde: 0, 
+                                    paises: Paises(uid: "", idPais: 0, nombre: "",mercosur: false), 
+                                    ingresoSinImpresora: false).obs;
+
+  RxBool editPrecioLocal = false.obs, editPlusMerc = false.obs, editPlusNoMerc = false.obs;
+  RxBool editPlusFinde = false.obs, editDescMen = false.obs, editDescMay = false.obs;
+  RxBool editPaisLocal = false.obs, responseOk = false.obs, verBtnGuardar = false.obs, ingSinImp = false.obs;
+  RxBool editIngSinImp = false.obs;
   RxString prLocal = ''.obs, plMerc = ''.obs, plNoMerc = ''.obs, plFinde = ''.obs, dsMen = ''.obs, dsMay = ''.obs;
   Rx<TextEditingController> prLocalCtrl = TextEditingController().obs;
   Rx<TextEditingController> plusMercCtrl = TextEditingController().obs;
@@ -51,6 +62,7 @@ late PaisesController paisesCtrl;
     editDescMen.value = true;
     editDescMay.value = true;
     editPaisLocal.value = true;
+    editIngSinImp.value = true;
     verBtnGuardar.value = true;
   }
 
@@ -62,6 +74,7 @@ late PaisesController paisesCtrl;
     editDescMen.value = false;
     editDescMay.value = false;
     editPaisLocal.value = false;
+    editIngSinImp.value = false;
     verBtnGuardar.value = false;
   }
 
@@ -100,6 +113,9 @@ late PaisesController paisesCtrl;
     paisLocal.value = pais;
     paisLocalCtrl.value.text = pais.nombre;
   }
+  ingSinImpOnChanged(bool value){
+    ingSinImp.value = !value;
+  }
 
   Future<SettingsResponse> getSettings() async{
 
@@ -116,6 +132,7 @@ late PaisesController paisesCtrl;
         descMenoresCtrl.value.text = settingsResponseModel.parametro.descMenores.toString();
         descMayoresCtrl.value.text = settingsResponseModel.parametro.descMayores.toString();
         paisLocal.value = settingsResponseModel.parametro.paises;
+        ingSinImp.value = settingsResponseModel.parametro.ingresoSinImpresora;
         paisLocalCtrl.value.text = paisLocal.value.nombre;
         desactivarEdicion();
       }else{
@@ -159,6 +176,7 @@ late PaisesController paisesCtrl;
       settings.value.plusFinde = int.parse(plusFindeCtrl.value.text);
       settings.value.descMenores = int.parse(descMenoresCtrl.value.text);
       settings.value.descMayores = int.parse(descMayoresCtrl.value.text);
+      settings.value.ingresoSinImpresora = ingSinImp.value;
       settings.value.paises = paisLocal.value;
       final http.Response response = settings.value.uid==''? await repository.createSettings(settings.value): await repository.updateSettings(settings.value);
       if(response.statusCode==200){
@@ -172,6 +190,7 @@ late PaisesController paisesCtrl;
           plusFindeCtrl.value.text = settingsResponseModel.parametro.plusFinde.toString();
           descMenoresCtrl.value.text = settingsResponseModel.parametro.descMenores.toString();
           descMayoresCtrl.value.text = settingsResponseModel.parametro.descMayores.toString();
+          ingSinImp.value = settingsResponseModel.parametro.ingresoSinImpresora;
           paisLocal.value = settingsResponseModel.parametro.paises;
           desactivarEdicion();
         }else{
@@ -183,6 +202,7 @@ late PaisesController paisesCtrl;
           plusFindeCtrl.value.text = "";
           descMenoresCtrl.value.text = "";
           descMayoresCtrl.value.text = "";
+          ingSinImp.value = false;
           paisLocal.value = settings.value.paises;
           desactivarEdicion();
         }
@@ -196,6 +216,7 @@ late PaisesController paisesCtrl;
           descMenoresCtrl.value.text = settings.value.descMenores.toString();
           descMayoresCtrl.value.text = settings.value.descMayores.toString();
           paisLocal.value = settings.value.paises;
+          ingSinImp.value = settings.value.ingresoSinImpresora;
         desactivarEdicion();
         return SettingsResponse(ok: false, msg: 'msg', parametro: settings.value);
       }

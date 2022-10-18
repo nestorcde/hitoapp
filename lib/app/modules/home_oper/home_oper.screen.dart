@@ -56,10 +56,10 @@ class HomeOperScreen extends GetView<HomeOperController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CustomLogo(
-                  imagePath: 'assets/tag-logo.png',
-                  textLabel: 'Hito Tres Fronteras\nPARAGUAY',
-                ),
+                      CustomLogo(
+                        imagePath: 'assets/tag-logo3.png',
+                        textLabel: '',
+                      ),
                 Form(controller: controller, movController: controller.movimientosController),
                 const SizedBox(
                   height: 30,
@@ -112,6 +112,8 @@ class _FormState extends State<Form> {
     // if (widget.movController.isConnected == true) {
     //   widget.movController.connected.value = true;
     // }
+    widget.movController.onInit();
+    widget.movController.onReady();
   }
 
   @override
@@ -119,6 +121,7 @@ class _FormState extends State<Form> {
     // final authService = Provider.of<AuthService>(context);
     // final socketService = Provider.of<SocketService>(context);
     //_recLogged();
+    //print(widget.movController.settings);
     return Container(
       //margin: EdgeInsets.only(top: 20),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -126,9 +129,12 @@ class _FormState extends State<Form> {
         children: [
           Obx(() => BotonAzulNav(
               texto: 'Conectar Impresora',
-              enabled: !widget.movController.connected.value,
+              enabled: !widget.movController.connected.value || widget.movController.settings.ingresoSinImpresora,
               funcion: () async {
                 FocusScope.of(context).unfocus();
+                
+                widget.movController.onInit();
+                widget.movController.onReady();
                 showSearch(
                     context: context,
                     delegate: _CustomSearchDelegate(
@@ -141,7 +147,7 @@ class _FormState extends State<Form> {
           ),
           Obx(() => BotonAzulNav(
               texto: 'Visitante Local',
-              enabled: widget.movController.connected.value,
+              enabled: widget.movController.connected.value || widget.movController.settings.ingresoSinImpresora,
               funcion: () async {
                 FocusScope.of(context).unfocus();
                 widget.controller.goToMovLocal();
@@ -151,7 +157,7 @@ class _FormState extends State<Form> {
           ),
           Obx(() => BotonAzulNav(
               texto: 'Visitante Extranjero',
-              enabled: widget.movController.connected.value,
+              enabled: widget.movController.connected.value || widget.movController.settings.ingresoSinImpresora,
               funcion: () async {
                 FocusScope.of(context).unfocus();
                 widget.controller.goToMovExtranjero();
