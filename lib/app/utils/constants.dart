@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
+
 
 
 class Constants {
@@ -49,7 +51,7 @@ class Environment {
    Uri apiUrl(String endpoint) =>    Uri(
                           scheme: 'https',
                           host: 'squid-app-v7yuj.ondigitalocean.app' ,
-                          path: '/api'+endpoint
+                          path: '/api$endpoint'
                         );
    String stringUrl() =>  'https://squid-app-v7yuj.ondigitalocean.app';
   //  Uri apiUrl(String endpoint) =>    Uri(
@@ -67,9 +69,13 @@ class Environment {
   //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://localhost:3000${endpoint.trim()}' : 'http://localhost:3000${endpoint.trim()}';
   //  Uri apiUrl(String endpoint) =>    Uri(
   //                         scheme: 'http',
-  //                         host: Platform.isAndroid ? '192.168.100.215' : '192.168.100.215',
+  //                         host: Platform.isAndroid ? '192.168.100.64' : '192.168.100.64',
   //                         port: 3000,
   //                         path: '/api$endpoint'
   //                       );
-  //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.215:3000${endpoint.trim()}' : 'http://192.168.100.215:3000${endpoint.trim()}';
+  //  String stringUrl(String endpoint) => Platform.isAndroid ? 'http://192.168.100.64:3000${endpoint.trim()}' : 'http://192.168.100.64:3000${endpoint.trim()}';
+
+  
+  static formatPrice(int price) => '\$ ${price.toStringAsFixed(2)}';
+  static formatDate(DateTime date) => DateFormat.yMd('es-PY').add_Hms().format(date);
 }

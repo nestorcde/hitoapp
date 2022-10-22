@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_detalle_request.dart';
 import 'package:hito_app/app/modules/movimientos/movimientos_response.dart';
+import 'package:hito_app/app/utils/constants.dart';
 //import 'package:open_document/open_document.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,10 +28,11 @@ import 'package:hito_app/app/modules/settings/settings_controller.dart';
 import 'package:hito_app/app/modules/settings/settings_model.dart';
 import 'package:hito_app/app/modules/settings/settings_response_model.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart';
 
 import '../../data/repository/remote/auth_repository.dart';
 import '../../ui/widgets/mostrar_alerta.dart';
-import 'package:hito_app/app/utils/printerenum.dart';
+import 'package:hito_app/app/utils/printerenum.dart' as pe;
 
 enum TipoFecha {
     FchDesde,
@@ -282,7 +284,7 @@ class MovimientosController extends GetxController {
   }
 
   sample(MovimientoResponse movResponse) async {
-    final imageBytes = await imagePathToUint8List('assets/icono.png');
+    final imageBytes = await imagePathToUint8List('assets/icono4.png');
     final dateTime = DateTime.now();
     final fechaHora =
         "${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
@@ -292,25 +294,25 @@ class MovimientosController extends GetxController {
         bluetooth.printImageBytes(imageBytes); //image from Asset
         bluetooth.printNewLine();
         bluetooth.printCustom(
-            "COMPROBANTE Nº: ${movResponse.movimiento.idMovimiento}", Size.bold.val, Align.left.val);
+            "COMPROBANTE Nº: ${movResponse.movimiento.idMovimiento}", pe.Size.bold.val, pe.Align.left.val);
         bluetooth.printCustom(
-            "FECHA: $fechaHora", Size.bold.val, Align.left.val);
+            "FECHA: $fechaHora", pe.Size.bold.val, pe.Align.left.val);
         bluetooth.printCustom("PAIS: ${paisOrigen.value.nombre.toUpperCase()}",
-            Size.bold.val, Align.left.val);
+            pe.Size.bold.val, pe.Align.left.val);
         bluetooth.printNewLine();
         bluetooth.printCustom(
-            "Importe abonado", Size.bold.val, Align.center.val);
+            "Importe abonado", pe.Size.bold.val, pe.Align.center.val);
         bluetooth.printCustom(
-            f.format(importe.value), Size.extraLarge.val, Align.center.val);
+            f.format(importe.value), pe.Size.extraLarge.val, pe.Align.center.val);
         bluetooth.printCustom(
-            '${movResponse.movimiento.cantidad} ${movResponse.movimiento.cantidad>1?"PERSONAS":"PERSONA"}', Size.bold.val, Align.center.val);
+            '${movResponse.movimiento.cantidad} ${movResponse.movimiento.cantidad>1?"PERSONAS":"PERSONA"}', pe.Size.bold.val, pe.Align.center.val);
         bluetooth.printNewLine();
         bluetooth.printCustom(
-            "Gracias por visitarnos", Size.medium.val, Align.center.val);
+            "Gracias por visitarnos", pe.Size.medium.val, pe.Align.center.val);
         bluetooth.printCustom(
-            "VUELVA PRONTO", Size.boldMedium.val, Align.center.val);
+            "VUELVA PRONTO", pe.Size.boldMedium.val, pe.Align.center.val);
         bluetooth.printQRcode("https://cti.itaipu.gov.py/es/node/342", 200, 200,
-            Align.center.val);
+            pe.Align.center.val);
         bluetooth.printNewLine();
         bluetooth.printNewLine();
         bluetooth.printNewLine();
@@ -461,40 +463,44 @@ class MovimientosController extends GetxController {
     final image =
         (await rootBundle.load("assets/icono3.png")).buffer.asUint8List();
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.SizedBox(height: 10),
-              pw.Image(pw.MemoryImage(image),
-                  width: 500, height: 150, fit: pw.BoxFit.cover),
-              pw.SizedBox(height: 30),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
-                children: [ pw.Text("DETALLE DE MOVIMIENTOS", style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 30)),]),
-              pw.SizedBox(height: 20),
-              pw.Text("Fecha Desde: $fchDesde"),
-              pw.SizedBox(height: 10),
-              pw.Text("Fecha Hasta: $fchHasta"),
-              pw.SizedBox(height: 10),
-              pw.Text(
-                  "Usuario: ${nombreUsuario == "" ? "TODOS" : nombreUsuario}"),
-              pw.SizedBox(height: 30),
-              itemColumn(detalles)
-            ],
-          );
-        },
+        header: (context) => pw.Column(
+          children: [
+            pw.SizedBox(height: 10),
+            pw.Image(pw.MemoryImage(image),
+                width: 200, height: 50, fit: pw.BoxFit.cover),
+            pw.SizedBox(height: 30),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.center,
+              children: [ pw.Text("DETALLE DE MOVIMIENTOS", style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 15)),]),
+            pw.SizedBox(height: 20),
+          ]
+          ),
+        build: (pw.Context context) => [
+            pw.Text("Fecha Desde: $fchDesde"),
+            pw.SizedBox(height: 10),
+            pw.Text("Fecha Hasta: $fchHasta"),
+            pw.SizedBox(height: 10),
+            pw.Text(
+                "Usuario: ${nombreUsuario == "" ? "TODOS" : nombreUsuario}"),
+            pw.SizedBox(height: 30),
+            buildInvoice(detalles),
+            Divider(),
+            buildTotal(detalles),
+
+        ]
       ),
     );
     return pdf.save();
   }
+  
+  
+  
 
-  pw.Expanded itemColumn(List<Detalle> elements) {
-    return pw.Expanded(
-      child: pw.Column(
-        children: [
+
+   itemColumn(List<Detalle> elements) {
+    return  [
           pw.Row(
               children: [
                 pw.Expanded(
@@ -541,11 +547,9 @@ class MovimientosController extends GetxController {
                     child: pw.Text(element.pais, textAlign: pw.TextAlign.center)),
                 pw.Expanded(
                     child: pw.Text(element.usuario, textAlign: pw.TextAlign.left)),
-              ],
+              ]
             )
-        ],
-      ),
-    );
+        ];
   }
 
   Future<void> savePdfFile(String fileName, Uint8List byteList) async {
@@ -557,5 +561,116 @@ class MovimientosController extends GetxController {
     final result = await OpenFile.open(filePath);
     print(result.message);
 
+  }
+
+  Widget buildInvoice(List<Detalle> invoice) {
+    final headers = [
+      'Num',
+      'Comprob',
+      'Fecha',
+      'Cant',
+      'Importe',
+      'Pais',
+      'Usuario'
+    ];
+    final data = invoice.map((item) {
+      return [
+        '${item.num}',
+        '${item.movNum}',
+        item.fecha,
+        '${item.cantidad}',
+        f.format(item.importe),
+        item.pais,
+        item.usuario
+      ];
+    }).toList();
+
+    return Table.fromTextArray(
+      headers: headers,
+      data: data,
+      border: null,
+      headerStyle: TextStyle(fontWeight: FontWeight.bold),
+      headerDecoration: BoxDecoration(color: PdfColors.grey300),
+      cellHeight: 30,
+      cellAlignments: {
+        0: Alignment.centerLeft,
+        1: Alignment.center,
+        2: Alignment.centerLeft,
+        3: Alignment.centerRight,
+        4: Alignment.centerRight,
+        5: Alignment.center,
+        6: Alignment.centerLeft,
+      },
+    );
+  }
+
+  Widget buildTotal(List<Detalle> invoice) {
+    final total = invoice
+        .map((item) => item.importe)
+        .reduce((item1, item2) => item1 + item2);
+    
+    final ingresantes = invoice
+        .map((item) => item.cantidad)
+        .reduce((item1, item2) => item1 + item2);
+
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Row(
+        children: [
+          Spacer(flex: 6),
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildText(
+                  title: 'Ingresantes',
+                  titleStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  value: '$ingresantes',
+                  unite: true,
+                ),
+                Divider(),
+                buildText(
+                  title: 'Recaudado',
+                  titleStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  value: f.format(total),
+                  unite: true,
+                ),
+                SizedBox(height: 2 * PdfPageFormat.mm),
+                Container(height: 1, color: PdfColors.grey400),
+                SizedBox(height: 0.5 * PdfPageFormat.mm),
+                Container(height: 1, color: PdfColors.grey400),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static buildText({
+    required String title,
+    required String value,
+    double width = double.infinity,
+    TextStyle? titleStyle,
+    bool unite = false,
+  }) {
+    final style = titleStyle ?? TextStyle(fontWeight: FontWeight.bold);
+
+    return Container(
+      width: width,
+      child: Row(
+        children: [
+          Expanded(child: Text(title, style: style)),
+          Text(value, style: unite ? style : null),
+        ],
+      ),
+    );
   }
 }

@@ -7,8 +7,10 @@ import 'package:hito_app/app/modules/loading/loading_page.dart';
 import 'package:hito_app/app/routes/pages_app.dart';
 import 'package:hito_app/app/ui/theme/theme_app.dart';
 import 'package:hito_app/app/utils/dependency_injection.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main()async {
+  tz.initializeTimeZones();
   await DependencyInjection.init();
   await initializeDateFormatting();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
